@@ -6,9 +6,9 @@ import { useFetch } from "@/lib/utils/useFetch";
 
 const StatusFilter = () => {
   const { tasks } = useFetch();
-  const { selectedFilter, showAllTasks, filterActive, filterCompleted } =
+  const { filteredTasks, selectedFilter, showAllTasks, filterActive, filterCompleted } =
     useFilter(tasks);
-
+  console.log(selectedFilter,filteredTasks);
   return (
     <div className="flex gap-1">
       <Button selected={selectedFilter === "all"} onClick={showAllTasks}>
