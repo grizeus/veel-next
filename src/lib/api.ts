@@ -23,7 +23,7 @@ export const getTasks = async () => {
   }
 };
 
-export const createTask = async (task: Omit<TaskI, "id">) => {
+export const createTask = async (task: TaskI) => {
   try {
     const response = await instance.post("/", task);
     return response.data;
