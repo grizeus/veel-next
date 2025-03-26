@@ -1,8 +1,13 @@
-const TaskCounter = () => {
+export interface TaskCounterProps {
+  completed: number;
+  active: number;
+}
+
+const TaskCounter = ({ completed, active }: TaskCounterProps) => {
   return (
     <div className="flex flex-col gap-1">
-      <span className="">Active: </span>
-      <span className="">Completed: </span>
+      <span className="">Active: { active}</span>
+      <span className="">Completed: { completed}</span>
     </div>
   );
 };

@@ -23,10 +23,10 @@ export const getTasks = async () => {
   }
 };
 
-export const createTask = async (task: Omit<TaskI, "userId" | "id">) => {
+export const createTask = async (task: Omit<TaskI, "id">) => {
   try {
-  const response = await instance.post("/", task);
-  return response.data;
+    const response = await instance.post("/", task);
+    return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       console.log(error.response?.data);
@@ -40,8 +40,8 @@ export const createTask = async (task: Omit<TaskI, "userId" | "id">) => {
 
 export const deleteTask = async (id: number) => {
   try {
-  const response = await instance.delete(`/${id}`);
-  return response.data;
+    const response = await instance.delete(`/${id}`);
+    return (response.status === 200);
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       console.log(error.response?.data);
