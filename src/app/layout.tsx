@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReactNode } from "react";
+import AppBar from "./components/appbar";
 
 // NOTE: look for different fonts on google fonts
 const geistSans = Geist({
@@ -19,15 +20,16 @@ export const metadata: Metadata = {
   description: "Simple app to create, edit and delete to-do items",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+export interface RootLayoutProps {
   children: ReactNode;
-}>) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        className={`${geistSans.variable} ${geistMono.variable} antialiased p-5`}>
+        <AppBar />
         {children}
       </body>
     </html>
