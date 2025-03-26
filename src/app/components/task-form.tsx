@@ -3,20 +3,50 @@
 import { FormEvent } from "react";
 import Button from "@/app/components/button";
 import { createTask } from "@/lib/api";
-import { TaskListProps } from "@/app/components/task-list";
+import getQueryClient from "@/lib/utils/getQueryClient";
+import { useMutation } from "@tanstack/react-query";
+import { TaskI } from "./task";
+import useStore from "@/lib/zustand/store";
 
-const TaskForm = ({ tasks, setTasks }: TaskListProps) => {
+const TaskForm = () => {
+  const addTask = useStore(state => state.addTask);
+  const queryClient = getQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: createTask,
+    onMutate: async newTask => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+      const previousTasks = queryClient.getQueryData(["tasks"]);
+      queryClient.setQueryData(["tasks"], (old: TaskI[]) => {
+        if (old) {
+          return old.concat(newTask);
+        }
+      });
+      return { prev: previousTasks };
+    },
+    onError: (err, newTask, context) => {
+      if (context?.prev) {
+        queryClient.setQueryData(["tasks"], context.prev);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const value = (form.elements[0] as HTMLInputElement).value;
     if (value) {
-      const res = await createTask({
+      const newTask = {
         title: value.trim(),
         completed: false,
+        id: Date.now(),
         userId: 1,
-      });
-      setTasks([...tasks, res]);
+      };
+      addTask(newTask);
+      createMutation.mutate(newTask);
     }
     form.reset();
   };

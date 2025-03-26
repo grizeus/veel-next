@@ -1,33 +1,14 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
-import Button from "./button";
-import { TaskI } from "./task";
+import Button from "@/app/components/button";
+import useStore from "@/lib/zustand/store";
 
-export interface StatusFilterProps {
-  tasks: TaskI[];
-  onFilter: Dispatch<SetStateAction<TaskI[]>>;
-}
-
-const StatusFilter = ({ tasks, onFilter }: StatusFilterProps) => {
-  const [selectedFilter, setSelectedFilter] = useState("all");
-  const filterActive = () => {
-    setSelectedFilter("active");
-    const filtered = tasks.filter(task => !task.completed);
-    onFilter(filtered);
-  };
-
-  const filterCompleted = () => {
-    setSelectedFilter("completed");
-    const filtered = tasks.filter(task => task.completed);
-    onFilter(filtered);
-  };
-
-  const showAllTasks = () => {
-    setSelectedFilter("all");
-    onFilter(tasks);
-  };
-
+const StatusFilter = () => {
+  const selectedFilter = useStore(state => state.selectedFilter);
+  const showAllTasks = useStore(state => state.showAllTasks);
+  const filterActive = useStore(state => state.filterActive);
+  const filterCompleted = useStore(state => state.filterCompleted);
+  
   return (
     <div className="flex gap-1">
       <Button selected={selectedFilter === "all"} onClick={showAllTasks}>

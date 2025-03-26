@@ -1,48 +1,38 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 import TaskForm from "@/app/components/task-form";
 import TaskList from "@/app/components/task-list";
 import AppBar from "@/app/components/appbar";
 import { getTasks } from "@/lib/api";
-import { TaskI } from "@/app/components/task";
+import getQueryClient from "@/lib/utils/getQueryClient";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-export default function Home() {
-  const [tasks, setTasks] = useState<TaskI[]>([]);
-  const [filteredTasks, setFilteredTasks] = useState<TaskI[]>([]);
+export default async function Home() {
+  const queryClient = getQueryClient();
 
-  useEffect(() => {
-    (async () => {
-      const tasks = await getTasks();
-      if (tasks) {
-        setTasks(tasks);
-      }
-    })();
-  }, []);
+  await queryClient.prefetchQuery({
+    queryKey: ["tasks"],
+    queryFn: () => getTasks(),
+    staleTime: 60 * 1000,
+  });
+  const dehydratedState = dehydrate(queryClient);
 
-  useEffect(() => {
-    setFilteredTasks(tasks);
-  }, [tasks]);
-
-  const completed = tasks.reduce(
-    (acc, task) => acc + Number(task.completed),
-    0
-  );
-  const active = tasks.length - completed;
   return (
-    <>
-      <AppBar
-        completed={completed}
-        active={active}
-        tasks={tasks}
-        setTasks={setFilteredTasks}
-      />
-      <main className="mt-2">
-        <TaskForm setTasks={setTasks} tasks={tasks} />
-        <TaskList tasks={filteredTasks} setTasks={setTasks} />
+    <HydrationBoundary state={dehydratedState}>
+      <AppBar />
+      <main className="mt-2 grow-1">
+        <TaskForm />
+        <TaskList />
       </main>
-      <footer className="row-start-3 flex flex-wrap items-center justify-center gap-[24px]"></footer>
-    </>
+      <footer className="mt-2 flex h-9 items-center rounded bg-gray-100 p-1">
+        <span className="text-base">
+          &copy; 2025{" "}
+          <a
+            href="https://github.com/grizeus"
+            target="_blank"
+            rel="noopener noreferrer">
+            grizeus
+          </a>{" "}
+        </span>
+      </footer>
+    </HydrationBoundary>
   );
 }
