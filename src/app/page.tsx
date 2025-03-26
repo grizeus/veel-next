@@ -1,4 +1,3 @@
-
 import TaskForm from "@/app/components/task-form";
 import TaskList from "@/app/components/task-list";
 import AppBar from "@/app/components/appbar";
@@ -14,16 +13,26 @@ export default async function Home() {
     queryFn: () => getTasks(),
     staleTime: 60 * 1000,
   });
-  const dehydeatedState = dehydrate(queryClient);
+  const dehydratedState = dehydrate(queryClient);
 
   return (
-    <HydrationBoundary state={dehydeatedState}>
+    <HydrationBoundary state={dehydratedState}>
       <AppBar />
-      <main className="mt-2">
+      <main className="mt-2 grow-1">
         <TaskForm />
         <TaskList />
       </main>
-      <footer className="row-start-3 flex flex-wrap items-center justify-center gap-[24px]"></footer>
+      <footer className="mt-2 flex h-9 items-center rounded bg-gray-100 p-1">
+        <span className="text-base">
+          &copy; 2025{" "}
+          <a
+            href="https://github.com/grizeus"
+            target="_blank"
+            rel="noopener noreferrer">
+            grizeus
+          </a>{" "}
+        </span>
+      </footer>
     </HydrationBoundary>
   );
 }

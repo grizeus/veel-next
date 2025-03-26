@@ -6,8 +6,10 @@ import { createTask } from "@/lib/api";
 import getQueryClient from "@/lib/utils/getQueryClient";
 import { useMutation } from "@tanstack/react-query";
 import { TaskI } from "./task";
+import useStore from "@/lib/zustand/store";
 
 const TaskForm = () => {
+  const addTask = useStore(state => state.addTask);
   const queryClient = getQueryClient();
 
   const createMutation = useMutation({
@@ -15,7 +17,6 @@ const TaskForm = () => {
     onMutate: async newTask => {
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
       const previousTasks = queryClient.getQueryData(["tasks"]);
-      console.log(previousTasks);
       queryClient.setQueryData(["tasks"], (old: TaskI[]) => {
         if (old) {
           return old.concat(newTask);
@@ -38,12 +39,14 @@ const TaskForm = () => {
     const form = e.target as HTMLFormElement;
     const value = (form.elements[0] as HTMLInputElement).value;
     if (value) {
-      createMutation.mutate({
+      const newTask = {
         title: value.trim(),
         completed: false,
         id: Date.now(),
         userId: 1,
-      });
+      };
+      addTask(newTask);
+      createMutation.mutate(newTask);
     }
     form.reset();
   };

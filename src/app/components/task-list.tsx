@@ -4,21 +4,27 @@ import Task, { TaskI } from "@/app/components/task";
 import { deleteTask } from "@/lib/api";
 import getQueryClient from "@/lib/utils/getQueryClient";
 import { useFetch } from "@/lib/utils/useFetch";
-import { useFilter } from "@/lib/utils/useFilter";
+import useStore from "@/lib/zustand/store";
 import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const TaskList = () => {
-  const { tasks } = useFetch();
-  const { filteredTasks, selectedFilter } = useFilter(tasks);
-  console.log(selectedFilter, filteredTasks);
   const queryClient = getQueryClient();
+
+  const { tasks } = useFetch();
+  const setTasks = useStore(state => state.setTasks);
+  const filteredTasks = useStore(state => state.filteredTasks);
+  const removeTask = useStore(state => state.removeTask);
+  
+  useEffect(() => {
+    setTasks(tasks);
+  }, [tasks, setTasks]);
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: deleteTask,
     onMutate: async id => {
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
       const previousTasks = queryClient.getQueryData(["tasks"]);
-      console.log(previousTasks);
       queryClient.setQueryData(["tasks"], (old: TaskI[]) => {
         if (old) {
           return old.filter(task => task.id !== id);
@@ -34,6 +40,7 @@ const TaskList = () => {
   });
 
   const handleDelete = async (id: number) => {
+    removeTask(id);
     await mutateAsync(id);
   };
 

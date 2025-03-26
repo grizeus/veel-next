@@ -1,12 +1,7 @@
-import { useFetch } from "@/lib/utils/useFetch";
-
-export interface TaskCounterProps {
-  completed: number;
-  active: number;
-}
+import useStore from "@/lib/zustand/store";
 
 const TaskCounter = () => {
-  const { tasks } = useFetch();
+  const tasks = useStore(state => state.tasks);
 
   const completed =
     tasks?.reduce((acc, task) => acc + Number(task.completed), 0) ?? 0;

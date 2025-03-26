@@ -1,14 +1,14 @@
 "use client";
 
 import Button from "@/app/components/button";
-import { useFilter } from "@/lib/utils/useFilter";
-import { useFetch } from "@/lib/utils/useFetch";
+import useStore from "@/lib/zustand/store";
 
 const StatusFilter = () => {
-  const { tasks } = useFetch();
-  const { filteredTasks, selectedFilter, showAllTasks, filterActive, filterCompleted } =
-    useFilter(tasks);
-  console.log(selectedFilter,filteredTasks);
+  const selectedFilter = useStore(state => state.selectedFilter);
+  const showAllTasks = useStore(state => state.showAllTasks);
+  const filterActive = useStore(state => state.filterActive);
+  const filterCompleted = useStore(state => state.filterCompleted);
+  
   return (
     <div className="flex gap-1">
       <Button selected={selectedFilter === "all"} onClick={showAllTasks}>
